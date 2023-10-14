@@ -12,7 +12,6 @@
     "start:production": "node ./bin/www",
     "build": "node psql-setup-script.js"
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
