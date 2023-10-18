@@ -10,8 +10,9 @@ const { restoreUser } = require('../../utils/auth.js');
 
 router.use(restoreUser);
 router.use('/session', sessionRouter);
-
 router.use('/users', usersRouter);
+
+
 
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
@@ -25,7 +26,6 @@ router.post('/test', function(req, res) {
 
 
 // GET /api/set-token-cookie
-
 router.get('/set-token-cookie', async (_req, res) => {
   const user = await User.findOne({
     where: {
@@ -37,9 +37,8 @@ router.get('/set-token-cookie', async (_req, res) => {
 });
 
 
+
 // GET /api/restore-user
-
-
 router.get(
   '/restore-user',
   (req, res) => {
