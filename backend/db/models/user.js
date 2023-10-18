@@ -36,11 +36,11 @@ module.exports = (sequelize, DataTypes) => {
           len: [60, 60]
         }
       },
-      first_name: {
+      firstName: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      last_name: {
+      lastName: {
         type: DataTypes.STRING,
         allowNull: false
       }

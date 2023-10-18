@@ -9,12 +9,12 @@ if (process.env.NODE_ENV === 'production') {
 module.exports = {
   async up(queryInterface, Sequelize) {
     options.tableName = 'Users';
-    await queryInterface.addColumn(options, 'first_name', {
+    await queryInterface.addColumn(options, 'firstName', {
       type: Sequelize.STRING(255), // You can adjust the length as needed
       allowNull: false
     }, options);
 
-    await queryInterface.addColumn(options, 'last_name', {
+    await queryInterface.addColumn(options, 'lastName', {
       type: Sequelize.STRING(255), // You can adjust the length as needed
       allowNull: false
     });
