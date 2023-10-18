@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    options.tableName = 'Users'
+    options.tableName = 'Users';
     await queryInterface.addColumn(options, 'first_name', {
       type: Sequelize.STRING(255), // You can adjust the length as needed
       allowNull: false
@@ -21,7 +21,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = 'Users'
+    options.tableName = 'Users';
     await queryInterface.removeColumn(options, 'first_name');
     await queryInterface.removeColumn(options, 'last_name');
   }
