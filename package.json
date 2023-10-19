@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/cameron-eth/API-Project/issues"
   },
-  "homepage": "https://github.com/cameron-eth/API-Project#readme"
+  "homepage": "https://github.com/cameron-eth/API-Project#readme",
+  "dependencies": {
+    "express-validator": "^7.0.1"
+  }
 }
