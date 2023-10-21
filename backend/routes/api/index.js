@@ -1,16 +1,29 @@
-
 const { setTokenCookie } = require('../../utils/auth.js');
 const { User } = require('../../db/models');
+const { restoreUser } = require('../../utils/auth.js');
 
 
 const router = require('express').Router();
 const sessionRouter = require('./session.js');
 const usersRouter = require('./users.js');
-const { restoreUser } = require('../../utils/auth.js');
+const bookingsRouter = require('./bookings.js')
+const reviewRouter = require('./reviews.js')
+const reviewImagesRouter = require('./reviewImages.js')
+const spotsRouter = require('./spots.js')
+const spotImagesRouter = require('./spotImages.js')
 
 router.use(restoreUser);
 router.use('/session', sessionRouter);
 router.use('/users', usersRouter);
+router.use('/bookings', bookingsRouter)
+router.use('/reviews', reviewRouter)
+router.use('/review-images', reviewImagesRouter)
+router.use('/spots', spotsRouter)
+router.use('/spot-images', spotImagesRouter)
+
+
+
+
 
 
 
@@ -21,7 +34,7 @@ router.post('/test', (req, res) => {
 router.post('/test', function(req, res) {
     res.json({ requestBody: req.body });
     
-});
+}); //Needed twice ?
 
 
 
@@ -48,9 +61,10 @@ router.get(
 
 
 
-router.use(restoreUser);
+router.use(restoreUser); //Needed twice ?
 // GET /api/require-auth
-const { requireAuth } = require('../../utils/auth.js');
+const { requireAuth } = require('../../utils/auth.js'); //Needed twice ? Can this be up top?
+
 router.get(
   '/require-auth',
   requireAuth,
