@@ -85,14 +85,17 @@ router.get(
         id: user.id,
         email: user.email,
         username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name
+        firstName: user.firstName, 
+        lastName: user.lastName,   
       };
       return res.json({
         user: safeUser
       });
-    } else return res.json({ user: null });
+    } else {
+      return res.json({ user: null });
+    }
   }
 );
+
 
 module.exports = router;

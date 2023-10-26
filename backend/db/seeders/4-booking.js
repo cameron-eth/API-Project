@@ -12,16 +12,19 @@ module.exports = {
     const spotImageData = [
       {
         spotId: 1,
+        userId: 1,
         url: 'image1.jpg',
         preview: true,
       },
       {
         spotId: 2,
+        userId: 2,
         url: 'image2.jpg',
         preview: false,
       },
       {
         spotId: 1,
+        userId: 3,
         url: 'image3.jpg',
         preview: false,
       },
