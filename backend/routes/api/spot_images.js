@@ -7,9 +7,9 @@ router.delete('/:imageId', requireAuth, async (req, res) => {
   const { user } = req;
   const imageId = req.params.imageId;
 
-  if (!Number.isInteger(imageId) || imageId === null) {
-    return res.status(400).json({ message: 'Forbidden' });
-  }
+  // if (!Number.isInteger(imageId) || imageId === null) {
+  //   return res.status(400).json({ message: 'Forbidden' });
+  // }
 
   try {
     // Find the Spot Image by ID to get the spotId

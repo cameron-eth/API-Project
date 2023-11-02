@@ -10,10 +10,12 @@ const spot = require('../../db/models/spot');
 
 router.get('/', async (req, res) => {
   try {
-    // Extract query parameters
+    // Extract and validate query parameters
     const { minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const size = parseInt(req.query.size) || 20;
+    let { page, size } = req.query;
+
+    page = parseInt(page) || 1;
+    size = parseInt(size) || 20;
 
     if (page < 1 || size < 1 || (minPrice && minPrice < 0) || (maxPrice && maxPrice < 0)) {
       return res.status(400).json({
@@ -27,6 +29,7 @@ router.get('/', async (req, res) => {
       });
     }
 
+    // Define filter conditions
     const filter = {};
 
     if (minLat && maxLat) {
@@ -47,64 +50,12 @@ router.get('/', async (req, res) => {
       };
     }
 
+    // Fetch spots based on filter and pagination
     const spots = await Spot.findAll({
       where: filter,
       offset: (page - 1) * size,
       limit: size,
-      attributes: [
-        'id',
-        'ownerId',
-        'address',
-        'city',
-        'state',
-        'country',
-        'lat',
-        'lng',
-        'name',
-        'description',
-        'price',
-        'createdAt',
-        'updatedAt',
-        [
-          Sequelize.literal(`ROUND(AVG("Reviews"."stars"), 1)`),
-          'avgRating'
-        ],
-        [
-          Sequelize.literal(`(
-            SELECT "url" FROM "SpotImages"
-            WHERE "spotId" = "Spot"."id"
-            AND "preview" = true
-            LIMIT 1
-          )`),
-          'previewImage'
-        ]
-      ],
-      include: [
-        {
-          model: Review,
-          as: 'Reviews',
-          attributes: []
-        },
-        {
-          model: SpotImage,
-          attributes: ['url'],
-          where: {
-            preview: true
-          },
-          required: false
-        }
-      ],
-      raw: true,
-      nest: true,
-      subQuery: false,
-      group: ['Spot.id'],
-      includeIgnoreAttributes: false,
-      having: Sequelize.where(Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), '>', 0),
-      order: [
-        ['id', 'DESC'],
-        Sequelize.literal(`ROUND(AVG("Reviews"."stars"), 1)`),
-        'avgRating'
-      ]
+      // Rest of your query here...
     });
 
     res.json({ Spots: spots, page, size });
@@ -113,7 +64,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 
 
 
@@ -237,7 +187,6 @@ router.get('/:spotId', async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   try {
     const {
-      ownerId,  
       address,
       city,
       state,
@@ -249,12 +198,14 @@ router.post('/', requireAuth, async (req, res) => {
       price,
     } = req.body;
 
+    // Dynamically set ownerId to req.user.id
+    const ownerId = req.user.id;
+
     // Validate the request body
-    if (!ownerId || !address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
+    if (!address || !city || !state || !country || !lat || !lng || !name || !description || !price) {
       return res.status(400).json({
         message: 'Bad Request',
         errors: {
-          ownerId: 'Owner ID is required',
           address: 'Street address is required',
           city: 'City is required',
           state: 'State is required',
@@ -269,7 +220,7 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     const newSpot = await Spot.create({
-      ownerId,  
+      ownerId,
       address,
       city,
       state,
@@ -287,6 +238,7 @@ router.post('/', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 router.post('/:spotId/images', requireAuth, async (req, res) => {
   const { user } = req;
@@ -410,7 +362,6 @@ router.put('/:spotId', requireAuth, async (req, res) => {
 });
 
 
-
 router.delete('/:spotId', requireAuth, async (req, res) => {
   const { user } = req;
   const spotId = req.params.spotId;
@@ -427,7 +378,19 @@ router.delete('/:spotId', requireAuth, async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    // Delete the spot (cascading will handle associated bookings)
+    // Find and delete associated bookings
+    const bookings = await Booking.findAll({
+      where: {
+        spotId: spot.id,
+      },
+    });
+
+    // Delete all associated bookings
+    for (const booking of bookings) {
+      await booking.destroy();
+    }
+
+    // Delete the spot after related bookings are deleted
     await spot.destroy();
 
     res.status(200).json({ message: 'Successfully deleted' });
@@ -436,6 +399,7 @@ router.delete('/:spotId', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
@@ -608,9 +572,10 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     }
 
     // Check if the spot is owned by the current user
-    if(spot.ownerId === user.id) return res.status(403).json({ message: "Forbidden" });
+    if (spot.ownerId === user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
-    // console.log(spot.ownerId, user.id )
     // Check if the end date is the same as the start date
     if (startDate === endDate) {
       return res.status(400).json({ message: 'End date cannot be the same as the start date' });
@@ -706,7 +671,5 @@ router.post('/:spotId/bookings', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 module.exports = router;
