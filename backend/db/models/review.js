@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // Define associations
       Review.belongsTo(models.User, { foreignKey: 'userId'}); // A review belongs to a user
       Review.belongsTo(models.Spot, { foreignKey: 'spotId' }); // A review belongs to a spot
-      Review.hasMany(models.ReviewImage, { foreignKey: 'reviewId',  onDelete: 'CASCADE'});
+      Review.hasMany(models.ReviewImage, { foreignKey: 'reviewId',  onDelete: 'CASCADE', hooks: true});
     }
   }
   Review.init({
@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Review',
+    hooks: true
   });
   return Review;
 };
