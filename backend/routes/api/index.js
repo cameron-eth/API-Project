@@ -8,18 +8,19 @@ const sessionRouter = require('./session.js');
 const usersRouter = require('./users.js');
 const bookingsRouter = require('./bookings.js')
 const reviewRouter = require('./reviews.js')
-const reviewImagesRouter = require('./reviewImages.js')
-const spotsRouter = require('./spots.js')
-const spotImagesRouter = require('./spotImages.js')
+const spotsRouter = require('./spots.js', './spot_images.js' )
+const spotsImageRouter = require('./spot_images.js')
+const reviewImageRouter = require('./review_images.js')
+
 
 router.use(restoreUser);
 router.use('/session', sessionRouter);
 router.use('/users', usersRouter);
 router.use('/bookings', bookingsRouter)
 router.use('/reviews', reviewRouter)
-router.use('/review-images', reviewImagesRouter)
 router.use('/spots', spotsRouter)
-router.use('/spot-images', spotImagesRouter)
+router.use('/spot-images', spotsImageRouter)
+router.use('/review-images', reviewImageRouter)
 
 
 

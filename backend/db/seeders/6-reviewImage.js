@@ -5,6 +5,7 @@ const { ReviewImage } = require('../models');
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
+  options.tableName = 'ReviewImages'; // Define the table name in the options object
 }
 
 module.exports = {
@@ -27,11 +28,10 @@ module.exports = {
       },
     ];
 
-    await ReviewImage.bulkCreate(reviewImageData, { validate: true });
+    await ReviewImage.bulkCreate(reviewImageData, { validate: true, individualHooks: true, ...options });
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = 'ReviewImages';
     const Op = Sequelize.Op;
 
     const reviewIdsToDelete = [1, 2, 3];
