@@ -3,7 +3,6 @@
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
-  options.tableName = 'Bookings'; // Define the table name in the options object
 }
 
 module.exports = {
