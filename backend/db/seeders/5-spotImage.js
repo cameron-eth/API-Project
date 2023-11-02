@@ -28,7 +28,7 @@ module.exports = {
       },
     ];
 
-    await SpotImage.bulkCreate(spotImageData, { validate: true, individualHooks: true, ...options });
+    await SpotImage.bulkCreate(spotImageData, { validate: true, individualHooks: true});
   },
 
   async down(queryInterface, Sequelize) {

@@ -50,7 +50,7 @@ module.exports = {
       },
     ];
 
-    await Spot.bulkCreate(spotData, { validate: true, individualHooks: true, ...options });
+    await Spot.bulkCreate(spotData, { validate: true, individualHooks: true });
   },
 
   async down(queryInterface, Sequelize) {

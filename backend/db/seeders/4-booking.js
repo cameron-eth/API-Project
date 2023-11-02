@@ -31,7 +31,7 @@ module.exports = {
       },
     ];
 
-    await Booking.bulkCreate(bookingData, { validate: true, individualHooks: true, ...options });
+    await Booking.bulkCreate(bookingData, { validate: true, individualHooks: true });
   },
 
   async down(queryInterface, Sequelize) {

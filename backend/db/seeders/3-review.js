@@ -32,7 +32,7 @@ module.exports = {
       },
     ];
 
-    await Review.bulkCreate(reviewData, { validate: true, individualHooks: true, ...options });
+    await Review.bulkCreate(reviewData, { validate: true, individualHooks: true });
   },
 
   async down(queryInterface, Sequelize) {

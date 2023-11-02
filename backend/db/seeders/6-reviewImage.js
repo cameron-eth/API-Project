@@ -28,7 +28,7 @@ module.exports = {
       },
     ];
 
-    await ReviewImage.bulkCreate(reviewImageData, { validate: true, individualHooks: true, ...options });
+    await ReviewImage.bulkCreate(reviewImageData, { validate: true, individualHooks: true });
   },
 
   async down(queryInterface, Sequelize) {
