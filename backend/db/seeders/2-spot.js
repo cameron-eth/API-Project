@@ -1,12 +1,12 @@
 'use strict';
 
 const { Spot } = require('../models');
-const bcrypt = require("bcryptjs");
-
+const bcrypt = require('bcryptjs');
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
+  options.tableName = 'Spots'; // Define the table name in the options object
 }
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
         lat: 21.0522,
         lng: -144.7537,
         name: 'Cozy Cabin',
-        description: 'A-frame cabin in the heart of the forrest.',
+        description: 'A-frame cabin in the heart of the forest.',
         price: 234,
       },
       {
@@ -50,14 +50,13 @@ module.exports = {
       },
     ];
 
-    await Spot.bulkCreate(spotData, { validate: true });
+    await Spot.bulkCreate(spotData, { validate: true, individualHooks: true, ...options });
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = 'Spots'; 
     const Op = Sequelize.Op;
 
-    const ownerIdsToDelete = [1, 2, 3]; 
+    const ownerIdsToDelete = [1, 2, 3];
     const conditions = {
       ownerId: {
         [Op.in]: ownerIdsToDelete,

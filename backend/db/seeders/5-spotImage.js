@@ -5,6 +5,7 @@ const { SpotImage } = require('../models');
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;
+  options.tableName = 'SpotImages'; // Define the table name in the options object
 }
 
 module.exports = {
@@ -27,11 +28,10 @@ module.exports = {
       },
     ];
 
-    await SpotImage.bulkCreate(spotImageData, { validate: true });
+    await SpotImage.bulkCreate(spotImageData, { validate: true, individualHooks: true, ...options });
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = 'SpotImages';
     const Op = Sequelize.Op;
 
     const spotIdsToDelete = [1, 2, 3];

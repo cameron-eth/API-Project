@@ -5,7 +5,8 @@ const bcrypt = require('bcryptjs');
 
 let options = {};
 if (process.env.NODE_ENV === 'production') {
-  options.schema = process.env.SCHEMA; 
+  options.schema = process.env.SCHEMA;
+  options.tableName = 'Reviews'; // Define the table name in the options object
 }
 
 module.exports = {
@@ -29,17 +30,15 @@ module.exports = {
         review: 'Good spot, but needs improvement.',
         stars: 3,
       },
-     
     ];
 
-    await Review.bulkCreate(reviewData, { validate: true });
+    await Review.bulkCreate(reviewData, { validate: true, individualHooks: true, ...options });
   },
 
   async down(queryInterface, Sequelize) {
-    options.tableName = 'Reviews'; 
     const Op = Sequelize.Op;
 
-    const spotIdsToDelete = [1, 2, 3]; 
+    const spotIdsToDelete = [1, 2, 3];
 
     const conditions = {
       spotId: {
