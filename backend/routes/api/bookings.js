@@ -48,9 +48,6 @@ router.get('/current', requireAuth, async (req, res) => {
     }
 });
   
-
-
-// PUT endpoint to update a booking
 router.put('/:bookingId', requireAuth, async (req, res) => {
   const { user } = req;
   const bookingId = req.params.bookingId;
@@ -61,7 +58,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     const booking = await Booking.findByPk(bookingId);
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking couldn\'t be found' });
+      return res.status(404).json({ message: "Booking couldn't be found" });
     }
 
     // Check if the booking belongs to the current user
@@ -72,66 +69,57 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     // Check if the booking's end date is in the future
     const currentDate = new Date();
     if (new Date(booking.endDate) < currentDate) {
-      return res.status(403).json({ message: 'Past bookings can\'t be modified' });
+      return res.status(403).json({ message: "Past bookings can't be modified" });
     }
 
     const errorResponse = {};
 
-    // Check if the end date is the same as the start date
+    // Check if the start date is the same as the end date
     if (startDate === endDate) {
       errorResponse.startDate = 'Start date cannot be the same as the end date';
-    }
-
-    if (endDate === startDate) {
       errorResponse.endDate = 'Start date cannot be the same as the end date';
     }
 
     // Check if the end date is before the start date
     if (new Date(endDate) < new Date(startDate)) {
+      errorResponse.startDate = 'End date cannot be before the start date';
       errorResponse.endDate = 'End date cannot be before the start date';
     }
 
-    // Check if the new start date is on an existing end date
-    const conflictsWithin = await Booking.findOne({
-      where: {
-        id: booking.id,
-        startDate: {
-          [Sequelize.Op.lte]: endDate,
-        },
-        endDate: {
-          [Sequelize.Op.gte]: startDate,
-        },
-      },
-    });
-
-    if (conflictsWithin) {
-      errorResponse.startDate = 'Start date cannot be on an existing end date';
-    }
-
-    // Check if the start date is on an existing end date in other bookings
-    const spot = await Spot.findByPk(booking.spotId);
+    // Check for conflicts with other bookings
     const conflictsWithOtherBookings = await Booking.findOne({
       where: {
         spotId: booking.spotId,
-        startDate: {
-          [Sequelize.Op.lte]: endDate,
-        },
-        endDate: {
-          [Sequelize.Op.gte]: startDate,
-        },
+        [Op.or]: [
+          {
+            startDate: {
+              [Op.lte]: endDate,
+            },
+            endDate: {
+              [Op.gte]: startDate,
+            },
+          },
+          {
+            startDate: {
+              [Op.gte]: startDate,
+              [Op.lte]: endDate,
+            },
+          },
+        ],
         id: {
-          [Sequelize.Op.not]: bookingId, // Exclude the current booking
+          [Op.not]: bookingId, // Exclude the current booking
         },
       },
     });
 
     if (conflictsWithOtherBookings) {
-      errorResponse.startDate = 'Start date cannot be on an existing end date';
+      errorResponse.startDate = 'Start date conflicts with an existing booking';
+      errorResponse.endDate = 'End date conflicts with an existing booking';
     }
 
     // Check if the booking is for a past date
     if (new Date(startDate) < currentDate || new Date(endDate) < currentDate) {
-      errorResponse.message = 'Past bookings can\'t be modified';
+      errorResponse.message = "Past bookings can't be modified";
     }
 
     if (Object.keys(errorResponse).length > 0) {
@@ -156,6 +144,9 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+
 
 
 router.delete('/:bookingId', requireAuth, async (req, res) => {

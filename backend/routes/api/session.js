@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
@@ -7,24 +7,18 @@ const { User } = require('../../db/models');
 const { validationResult } = require('express-validator');
 
 const router = express.Router();
-router.use(restoreUser)
-
-// backend/routes/api/session.js
-// ...
+router.use(restoreUser);
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation');
-// ...
-
-
 
 const validateLogin = [
   check('credential')
     .exists({ checkFalsy: true })
     .notEmpty()
-    .withMessage('Please provide a valid email or username.'),
+    .withMessage('Email or username is required'),
   check('password')
     .exists({ checkFalsy: true })
-    .withMessage('Please provide a password.'),
+    .withMessage('Password is required'),
   handleValidationErrors
 ];
 
@@ -44,30 +38,27 @@ router.post(
     });
 
     if (!user || !bcrypt.compareSync(password, user.hashedPassword.toString())) {
-      const err = new Error('Login failed');
-      err.status = 401;
-      err.title = 'Login failed';
-      err.errors = { credential: 'The provided credentials were invalid.' };
-      return next(err);
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const safeUser = {
       id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName
     };
 
     await setTokenCookie(res, safeUser);
 
-    return res.json({
+    return res.status(200).json({
       user: safeUser
     });
   }
 );
 
 
+// Logout Route (no /api/session prefix)
 router.delete(
   '/',
   (_req, res) => {
@@ -76,6 +67,7 @@ router.delete(
   }
 );
 
+// Get Current User Route (no /api/session prefix)
 router.get(
   '/',
   (req, res) => {
@@ -83,10 +75,10 @@ router.get(
     if (user) {
       const safeUser = {
         id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         username: user.username,
-        firstName: user.firstName, 
-        lastName: user.lastName,   
       };
       return res.json({
         user: safeUser
@@ -96,6 +88,5 @@ router.get(
     }
   }
 );
-
 
 module.exports = router;

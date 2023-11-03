@@ -125,47 +125,57 @@ router.post('/:reviewId/images', requireAuth, async (req, res) => {
 
 // Edit a Review (Update)
 router.put('/:reviewId', requireAuth, async (req, res) => {
-    const { user } = req;
-    const reviewId = req.params.reviewId;
-    const { review, stars } = req.body;
-    
-    try {
-      // Find the review by its primary key
-      const existingReview = await Review.findByPk(reviewId);
+  const { user } = req;
+  const reviewId = req.params.reviewId;
+  const { review, stars } = req.body;
   
-      if (!existingReview) {
-        return res.status(404).json({ message: "Review couldn't be found" });
-      }
-  
-      // Ensure that the review belongs to the current user
-      if (existingReview.userId !== user.id) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-  
-      // Validate the request body
-      if (!review || !stars || stars < 1 || stars > 5) {
-        return res.status(400).json({
-          message: 'Bad Request',
-          errors: {
-            review: 'Review text is required',
-            stars: 'Stars must be an integer from 1 to 5',
-          },
-        });
-      }
-  
-      // Update the review
-      existingReview.review = review;
-      existingReview.stars = stars;
-      await existingReview.save();
+  try {
+    // Find the review by its primary key
+    const existingReview = await Review.findByPk(reviewId);
 
-
-      res.status(200).json(existingReview);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+    if (!existingReview) {
+      return res.status(404).json({ message: "Review couldn't be found" });
     }
-  });
-  
+
+    // Ensure that the review belongs to the current user
+    if (existingReview.userId !== user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    // Validate the request body
+    if (!review || !stars || stars < 1 || stars > 5) {
+      return res.status(400).json({
+        message: 'Bad Request',
+        errors: {
+          review: 'Review text is required',
+          stars: 'Stars must be an integer from 1 to 5',
+        },
+      });
+    }
+
+    // Update the review
+    existingReview.review = review;
+    existingReview.stars = stars;
+    await existingReview.save();
+
+    // Format the response
+    const response = {
+      id: existingReview.id,
+      userId: existingReview.userId,
+      spotId: existingReview.spotId,
+      review: existingReview.review,
+      stars: existingReview.stars,
+      createdAt: existingReview.createdAt,
+      updatedAt: existingReview.updatedAt,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
   router.put('/:reviewId/images', requireAuth, async (req, res) => {
     const { user } = req;
