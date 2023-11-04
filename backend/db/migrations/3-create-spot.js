@@ -22,16 +22,16 @@ module.exports = {
         }
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       city: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       state: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       country: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       lat: {
         type: Sequelize.FLOAT
@@ -40,10 +40,10 @@ module.exports = {
         type: Sequelize.FLOAT
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       price: {
         type: Sequelize.FLOAT

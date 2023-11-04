@@ -94,6 +94,7 @@ router.put('/:bookingId', requireAuth, async (req, res) => {
           {
             startDate: {
               [Op.lte]: endDate,
+
             },
             endDate: {
               [Op.gte]: startDate,

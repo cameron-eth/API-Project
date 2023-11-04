@@ -21,19 +21,19 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.INTEGER,
     }, 
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     } ,
 
     city: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
 
     state: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
 
     country: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
 
     lat: {
@@ -43,10 +43,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
     } ,
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     price: {
       type: DataTypes.FLOAT
