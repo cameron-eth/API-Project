@@ -214,9 +214,10 @@ router.get('/:spotId', async (req, res) => {
           attributes: ['id', 'firstName', 'lastName'],
         },
         {
-          model: Review,
-          attributes: [],
-          as: 'Reviews',
+          // Ensure that the alias ('as') and association name matches the one defined in the Spot model.
+          model: Review, // Check the name and association type (hasMany or hasOne).
+          attributes: [], // Include any attributes you need.
+          as: 'Reviews', // Check that the alias ('as') matches the one in your model definition.
         },
       ],
     });
