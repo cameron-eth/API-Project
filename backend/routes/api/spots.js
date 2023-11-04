@@ -144,21 +144,13 @@ router.get('/current', requireAuth, async (req, res) => {
         'name',
         'description',
         'price',
-        "createdAt",
-        "updatedAt",
         [
-          Sequelize.literal(`ROUND(AVG("Reviews"."stars"), 1)`),
-          'avgRating'
+          Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
+          'avgRating',
         ],
         [
-          Sequelize.literal(`(
-            SELECT "url" FROM "SpotImages"
-            WHERE "spotId" = "Spot"."id"
-            AND "preview" = true
-            LIMIT 1
-          )`),
-          'previewImage'
-        
+          Sequelize.fn('COALESCE', Sequelize.fn('MAX', Sequelize.col('SpotImages.url')), null),
+          'previewImage',
         ],
       ],
       include: [
@@ -167,16 +159,17 @@ router.get('/current', requireAuth, async (req, res) => {
           as: 'Reviews',
           attributes: [],
         },
+        {
+          model: SpotImage,
+          where: { preview: true },
+          attributes: [],
+        },
       ],
       raw: true,
       nest: true,
-      subQuery: false,
       group: ['Spot.id'],
       includeIgnoreAttributes: false,
-      // having: Sequelize.where(Sequelize.fn('COUNT', Sequelize.col('Reviews.id')), '>', 0),
-      order: [
-        ['id', 'ASC'],
-      ],
+      order: [['id', 'ASC']],
     });
 
     res.status(200).json({ Spots: spots });
@@ -209,14 +202,11 @@ router.get('/:spotId', async (req, res) => {
         'createdAt',
         'updatedAt',
         [
-          Sequelize.literal(`(
-            SELECT COUNT(*) FROM "Reviews"
-            WHERE "spotId" = "Spot"."id"
-          )`),
+          Sequelize.fn('COUNT', Sequelize.col('Reviews.id')),
           'numReviews'
         ],
         [
-          Sequelize.literal(`ROUND(AVG("Reviews"."stars"), 1)`),
+          Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
           'avgStarRating'
         ],
       ],
@@ -243,8 +233,6 @@ router.get('/:spotId', async (req, res) => {
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    
-
     // Additional processing here if needed
 
     res.status(200).json(spot);
@@ -253,6 +241,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
