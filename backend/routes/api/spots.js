@@ -124,7 +124,6 @@ router.get('/', async (req, res) => {
 
 
 
-
 router.get('/current', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -145,10 +144,6 @@ router.get('/current', requireAuth, async (req, res) => {
         [
           Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
           'avgRating',
-        ],
-        [
-          Sequelize.fn('COALESCE', Sequelize.fn('MAX', Sequelize.col('SpotImages.url')), null),
-          'previewImage',
         ],
       ],
       include: [
