@@ -88,7 +88,7 @@ router.get('/', async (req, res) => {
     ],
     raw: true,
     nest: true,
-    group: ['Spot.id'],
+    group: ['Spot.id', 'Reviews.stars'], // Include Reviews.stars in GROUP BY clause
     includeIgnoreAttributes: false,
     order: [['id', 'ASC']],
   };
@@ -121,6 +121,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 
 
