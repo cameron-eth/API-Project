@@ -127,6 +127,7 @@ router.get('/', async (req, res) => {
 
 
 
+
 router.get('/current', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
