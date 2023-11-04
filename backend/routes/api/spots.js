@@ -129,7 +129,7 @@ const spot = require('../../db/models/spot');
 // });
 
 router.get('/', async (req, res) => {
-  const schemaName = 'production8_db';
+  const schemaName = 'production9_db';
 
   const { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
@@ -195,8 +195,8 @@ router.get('/', async (req, res) => {
       ],
       [
         Sequelize.literal(`
-          (SELECT "url" FROM "${schemaName}".SpotImages
-          WHERE "spotId" = "Spot"."id"
+          (SELECT "url" FROM "${schemaName}"."SpotImages"
+          WHERE "spotId" = "${schemaName}"."Spots"."id"
           AND "preview" = true
           LIMIT 1)
         `),
