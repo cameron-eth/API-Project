@@ -195,15 +195,12 @@ router.get('/:spotId', async (req, res) => {
         'createdAt',
         'updatedAt',
         [
-          Sequelize.literal(`(
-            SELECT COUNT(*) FROM "Reviews"
-            WHERE "spotId" = "Spot"."id"
-          )`),
-          'numReviews'
+          Sequelize.fn('COUNT', Sequelize.col('Reviews.id')),
+          'numReviews',
         ],
         [
           Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
-          'avgStarRating'
+          'avgStarRating',
         ],
       ],
       include: [
@@ -237,6 +234,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
