@@ -194,6 +194,7 @@ router.get('/:spotId', async (req, res) => {
         'price',
         'createdAt',
         'updatedAt',
+        // Add columns from Reviews for aggregation
         [
           Sequelize.fn('COUNT', Sequelize.col('Reviews.id')),
           'numReviews',
@@ -214,12 +215,13 @@ router.get('/:spotId', async (req, res) => {
           attributes: ['id', 'firstName', 'lastName'],
         },
         {
-          // Ensure that the alias ('as') and association name matches the one defined in the Spot model.
-          model: Review, // Check the name and association type (hasMany or hasOne).
-          attributes: [], // Include any attributes you need.
-          as: 'Reviews', // Check that the alias ('as') matches the one in your model definition.
+          model: Review,
+          attributes: [],
+          as: 'Reviews',
         },
       ],
+      // Specify the column to group by
+      group: ['Spot.id'], // Add 'Spot.id' to the GROUP BY clause
     });
 
     // Check if the spot couldn't be found
@@ -235,6 +237,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
