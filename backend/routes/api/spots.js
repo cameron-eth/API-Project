@@ -206,6 +206,8 @@ router.get('/:spotId', async (req, res) => {
         // Include 'SpotImages.id' and 'SpotImages.url' in GROUP BY
         'SpotImages.id',
         'SpotImages.url',
+        // Include 'Owner.id' in GROUP BY
+        'Owner.id',
       ],
       include: [
         {
@@ -226,8 +228,9 @@ router.get('/:spotId', async (req, res) => {
       // Specify the columns to group by
       group: [
         'Spot.id',
-        'SpotImages.id', // Add 'SpotImages.id' to the GROUP BY clause
-        'SpotImages.url', // Add 'SpotImages.url' to the GROUP BY clause
+        'SpotImages.id',
+        'SpotImages.url',
+        'Owner.id', // Add 'Owner.id' to the GROUP BY clause
       ],
     });
 
@@ -244,6 +247,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
