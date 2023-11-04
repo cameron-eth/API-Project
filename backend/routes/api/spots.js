@@ -66,9 +66,15 @@ router.get('/', async (req, res) => {
       'name',
       'description',
       'price',
+      'createdAt',    // Include createdAt
+      'updatedAt',
       [
         Sequelize.fn('COALESCE', Sequelize.fn('ROUND', Sequelize.col('Reviews.stars'), 1), null),
         'avgRating',
+      ],
+      [
+        Sequelize.fn('COALESCE', Sequelize.fn('MAX', Sequelize.col('SpotImages.url')), null),
+        'previewImage',
       ],
     ],
     include: [
@@ -86,7 +92,7 @@ router.get('/', async (req, res) => {
     ],
     raw: true,
     nest: true,
-    group: ['Spot.id', 'Reviews.stars'], // Include Reviews.stars in GROUP BY clause
+    group: ['Spot.id', 'Reviews.stars'],
     includeIgnoreAttributes: false,
     order: [['id', 'ASC']],
   };
@@ -113,7 +119,15 @@ router.get('/', async (req, res) => {
       offset,
     });
 
-    res.status(200).json({ Spots: spots, page: Number(page), size: Number(size) });
+    // Construct the response object
+    const response = {
+      Spots: spots,
+      page: Number(page),
+      size: Number(size),
+    };
+
+    // Send the response
+    res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -206,8 +220,6 @@ router.get('/:spotId', async (req, res) => {
         // Include 'SpotImages.id' and 'SpotImages.url' in GROUP BY
         'SpotImages.id',
         'SpotImages.url',
-        // Include 'Owner.id' in GROUP BY
-        'Owner.id',
       ],
       include: [
         {
@@ -228,9 +240,8 @@ router.get('/:spotId', async (req, res) => {
       // Specify the columns to group by
       group: [
         'Spot.id',
-        'SpotImages.id',
-        'SpotImages.url',
-        'Owner.id', // Add 'Owner.id' to the GROUP BY clause
+        'SpotImages.id', // Add 'SpotImages.id' to the GROUP BY clause
+        'SpotImages.url', // Add 'SpotImages.url' to the GROUP BY clause
       ],
     });
 
@@ -247,7 +258,6 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 
 
