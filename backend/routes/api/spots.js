@@ -5,7 +5,6 @@ const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize'); 
 const { Sequelize } = require('sequelize');
 
-
 router.get('/', async (req, res) => {
   // Extract query parameters from the request with default values
   const { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
@@ -138,6 +137,11 @@ router.get('/', async (req, res) => {
 
 
 
+
+
+
+
+
 router.get('/current', requireAuth, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -187,7 +191,6 @@ router.get('/current', requireAuth, async (req, res) => {
 });
 
 
-
 router.get('/:spotId', async (req, res) => {
   const spotId = req.params.spotId;
 
@@ -208,18 +211,6 @@ router.get('/:spotId', async (req, res) => {
         'price',
         'createdAt',
         'updatedAt',
-        // Add columns from Reviews for aggregation
-        [
-          Sequelize.fn('COUNT', Sequelize.col('Reviews.id')),
-          'numReviews',
-        ],
-        [
-          Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
-          'avgStarRating',
-        ],
-        // Include 'SpotImages.id' and 'SpotImages.url' in GROUP BY
-        'SpotImages.id',
-        'SpotImages.url',
       ],
       include: [
         {
@@ -233,15 +224,13 @@ router.get('/:spotId', async (req, res) => {
         },
         {
           model: Review,
-          attributes: [],
+          attributes: [
+            // Include the aggregated columns from Reviews
+            [Sequelize.fn('COUNT', Sequelize.col('id')), 'numReviews'],
+            [Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('stars')), 1), 'avgStarRating'],
+          ],
           as: 'Reviews',
         },
-      ],
-      // Specify the columns to group by
-      group: [
-        'Spot.id',
-        'SpotImages.id', // Add 'SpotImages.id' to the GROUP BY clause
-        'SpotImages.url', // Add 'SpotImages.url' to the GROUP BY clause
       ],
     });
 
@@ -258,6 +247,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
