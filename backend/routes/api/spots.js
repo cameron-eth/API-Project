@@ -203,6 +203,9 @@ router.get('/:spotId', async (req, res) => {
           Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
           'avgStarRating',
         ],
+        // Include 'SpotImages.id' and 'SpotImages.url' in GROUP BY
+        'SpotImages.id',
+        'SpotImages.url',
       ],
       include: [
         {
@@ -220,8 +223,12 @@ router.get('/:spotId', async (req, res) => {
           as: 'Reviews',
         },
       ],
-      // Specify the column to group by
-      group: ['Spot.id'], // Add 'Spot.id' to the GROUP BY clause
+      // Specify the columns to group by
+      group: [
+        'Spot.id',
+        'SpotImages.id', // Add 'SpotImages.id' to the GROUP BY clause
+        'SpotImages.url', // Add 'SpotImages.url' to the GROUP BY clause
+      ],
     });
 
     // Check if the spot couldn't be found
