@@ -202,7 +202,7 @@ router.get('/:spotId', async (req, res) => {
           'numReviews'
         ],
         [
-          Sequelize.literal(`ROUND(AVG("Reviews"."stars"), 1)`),
+          Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
           'avgStarRating'
         ],
       ],
@@ -229,8 +229,6 @@ router.get('/:spotId', async (req, res) => {
       return res.status(404).json({ message: "Spot couldn't be found" });
     }
 
-    
-
     // Additional processing here if needed
 
     res.status(200).json(spot);
@@ -239,6 +237,7 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 
