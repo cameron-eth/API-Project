@@ -3,6 +3,6 @@ Mostly Sure:
 
 
 ROUTES:
-- edit a booking  Start Date On Existing End Date
-- create a booking  Start Date On Existing End Date
-- get all spots w invalid params 
+- spots dataType (most likely)
+- add image to review Id increment
+- minLat Params

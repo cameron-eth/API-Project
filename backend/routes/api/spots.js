@@ -9,10 +9,8 @@ const { Sequelize } = require('sequelize');
 const spot = require('../../db/models/spot');
 
 router.get('/', async (req, res) => {
-  // Extract query parameters from the request with default values
   const { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
-  // Validate query parameters
   const errors = {};
 
   if (isNaN(page) || page < 1 || page > 10) {
@@ -54,7 +52,6 @@ router.get('/', async (req, res) => {
     });
   }
 
-  // Define the query to filter spots based on the query parameters
   const spotQuery = {
     attributes: [
       'id',
@@ -99,28 +96,27 @@ router.get('/', async (req, res) => {
     order: [['id', 'ASC']],
   };
 
-  // Apply additional filters based on query parameters
+  spotQuery.where = {};
+
   if (minLat && maxLat && minLng && maxLng) {
-    spotQuery.where = {
-      lat: { [Sequelize.Op.between]: [minLat, maxLat] },
-      lng: { [Sequelize.Op.between]: [minLng, maxLng] },
-    };
+    spotQuery.where.lat = { [Sequelize.Op.between]: [minLat, maxLat] };
+    spotQuery.where.lng = { [Sequelize.Op.between]: [minLng, maxLng] };
   }
 
   if (minPrice && maxPrice) {
-    spotQuery.where = {
-      price: { [Sequelize.Op.between]: [minPrice, maxPrice] },
-    };
+    spotQuery.where.price = { [Sequelize.Op.between]: [minPrice, maxPrice] };
   }
 
-  // Pagination
+  if (minLat) {
+    spotQuery.where.lat = { [Sequelize.Op.gte]: minLat };
+  }
+
   const offset = (page - 1) * size;
 
   try {
     const spots = await Spot.findAll({
       ...spotQuery,
       offset,
-      
     });
 
     res.status(200).json({ Spots: spots, page: Number(page), size: Number(size) });
@@ -129,6 +125,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 
 
