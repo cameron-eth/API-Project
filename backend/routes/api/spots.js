@@ -145,9 +145,16 @@ router.get('/current', requireAuth, async (req, res) => {
         'name',
         'description',
         'price',
+        'createdAt',
+        'updatedAt',
         [
           Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
           'avgRating',
+        ],
+       
+        [
+          Sequelize.fn('COALESCE', Sequelize.fn('MAX', Sequelize.col('SpotImages.url')), null),
+          'previewImage',
         ],
       ],
       include: [
@@ -158,8 +165,7 @@ router.get('/current', requireAuth, async (req, res) => {
         },
         {
           model: SpotImage,
-          where: { preview: true },
-          attributes: [],
+          attributes: ['url'], // Include all attributes you need from SpotImage
         },
       ],
       raw: true,
@@ -175,6 +181,7 @@ router.get('/current', requireAuth, async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 
 
