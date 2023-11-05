@@ -177,7 +177,7 @@ router.put('/:reviewId', requireAuth, async (req, res) => {
 });
 
 
-  router.put('/:reviewId/images', requireAuth, async (req, res) => {
+router.put('/:reviewId/images', requireAuth, async (req, res) => {
     const { user } = req;
     const reviewId = req.params.reviewId;
     const { review, stars } = req.body;
@@ -225,7 +225,7 @@ router.put('/:reviewId', requireAuth, async (req, res) => {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
     }
-  });
+});
   
   
 
