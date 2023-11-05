@@ -191,6 +191,7 @@ router.get('/current', requireAuth, async (req, res) => {
 });
 
 
+
 router.get('/:spotId', async (req, res) => {
   const spotId = req.params.spotId;
 
@@ -211,6 +212,20 @@ router.get('/:spotId', async (req, res) => {
         'price',
         'createdAt',
         'updatedAt',
+        // Add columns from Reviews for aggregation
+        [
+          Sequelize.fn('COUNT', Sequelize.col('Reviews.id')),
+          'numReviews',
+        ],
+        [
+          Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('Reviews.stars')), 1),
+          'avgStarRating',
+        ],
+        // Include 'SpotImages.id' and 'SpotImages.url' in GROUP BY
+        'SpotImages.id',
+        'SpotImages.url',
+        // Include 'Owner.id' in GROUP BY
+        'Owner.id',
       ],
       include: [
         {
@@ -224,13 +239,16 @@ router.get('/:spotId', async (req, res) => {
         },
         {
           model: Review,
-          attributes: [
-            // Include the aggregated columns from Reviews
-            [Sequelize.fn('COUNT', Sequelize.col('id')), 'numReviews'],
-            [Sequelize.fn('ROUND', Sequelize.fn('AVG', Sequelize.col('stars')), 1), 'avgStarRating'],
-          ],
+          attributes: [],
           as: 'Reviews',
         },
+      ],
+      // Specify the columns to group by
+      group: [
+        'Spot.id',
+        'SpotImages.id',
+        'SpotImages.url',
+        'Owner.id', // Add 'Owner.id' to the GROUP BY clause
       ],
     });
 
@@ -247,7 +265,6 @@ router.get('/:spotId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 
 
